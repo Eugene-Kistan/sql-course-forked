@@ -11,44 +11,114 @@ These have  matching columns:
 */
 
 -- Show 10 sample rows of the airports table
-SELECT 	TOP 10 * FROM 	countries c;
+SELECT
+	TOP 10
+	*
+FROM
+	countries c;
 
 -- Show 10 sample rows of the airports table
-SELECT 	TOP 10 * FROM 	airports a;
+SELECT
+	TOP 10
+	*
+FROM
+	airports a;
 
 -- Show 10 sample rows of the airports_frequencies table
-SELECT 	TOP 10 * FROM airport_frequencies af;
+SELECT
+	TOP 10
+	*
+FROM
+	airport_frequencies af;
 
 -- These are the more interesting columns of the airports table  that we use in this exercise
-SELECT TOP 10
+SELECT
+	TOP 10
 	a.ident
-	, a.iata_code
-	, a.name
-	, a.[type]
-	, a.latitude_deg
-	, a.longitude_deg
-	, a.elevation_ft
-	, a.iso_country
-FROM airports a;
+	
+	,a.iata_code
+	
+	,a.name
+	
+	,a.[type]
+	
+	,a.latitude_deg
+	
+	,a.longitude_deg
+	
+	,a.elevation_ft
+	
+	,a.iso_country
+FROM
+	airports a;
 
 -- How many airports are in the airports table?
-
+SELECT
+	COUNT(*)
+FROM
+	airports
 -- How many frequencies are in the airport_frequencies table?
-
+SELECT
+	COUNT(*)
+FROM
+	airport_frequencies
 -- How many airports of each type?
+SELECT
+	a.[type]
+
+	,COUNT(id) AS NumAitports
+FROM
+	airports a
+GROUP BY a.[type]
+ORDER BY NumAitports DESC
 
 -- Is the airport.ident column unique? i.e. there are no duplicate values
-
+SELECT
+	a.ident
+	,COUNT(*) NumberOfAirports
+FROM
+	airports AS a
+GROUP BY a.ident
+ORDER BY NumberOfAirports DESC
 /*
 Do a data quality check on the airports_frequencies table
 Are there any orphan rows (frequencies without a matching airports)?
 You can do this is several ways: LEFT JOIN, NOT IN, NOT EXISTS,...
 */
 -- left join approach
+SELECT
+	af.*
+FROM
+	airport_frequencies af
+	LEFT JOIN airports a ON af.airport_ident = a.ident
 
 -- NOT EXISTS approach	
+SELECT
+	COUNT(*)
+FROM
+	airport_frequencies af
+WHERE
+     NOT EXISTS (
+   SELECT
+	*
+FROM
+	airport_frequencies af
+WHERE 
+)
+
 
 -- NOT IN approach	
+SELECT
+	COUNT(*)
+FROM
+	airport_frequencies af
+WHERE af.airport_ident NOT IN
+(SELECT
+	ident
+FROM
+	airports)
+
+
 
 /*
 1. List airports.  Show the following columns: ident, iata_code, name, latitude_deg, longitude_deg 
