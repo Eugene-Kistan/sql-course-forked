@@ -6,13 +6,35 @@
  */
 
 DROP TABLE IF EXISTS #PatientAdmission;
-CREATE TABLE #PatientAdmission (AdmittedDate DATE, NumAdmissions INT);
-INSERT INTO #PatientAdmission (AdmittedDate, NumAdmissions) VALUES ('2024-01-01', 5)
-INSERT INTO #PatientAdmission (AdmittedDate, NumAdmissions) VALUES ('2024-01-02', 6)
-INSERT INTO #PatientAdmission (AdmittedDate, NumAdmissions) VALUES ('2024-01-03', 4)
-INSERT INTO #PatientAdmission (AdmittedDate, NumAdmissions) VALUES ('2024-01-05', 2)
-INSERT INTO #PatientAdmission (AdmittedDate, NumAdmissions) VALUES ('2024-01-08', 2)
-SELECT * FROM #PatientAdmission
+CREATE TABLE #PatientAdmission
+(
+    AdmittedDate  DATE
+    ,NumAdmissions INT
+);
+INSERT INTO #PatientAdmission
+    (AdmittedDate, NumAdmissions)
+VALUES
+    ('2024-01-01' ,5)
+INSERT INTO #PatientAdmission
+    (AdmittedDate, NumAdmissions)
+VALUES
+    ('2024-01-02' ,6)
+INSERT INTO #PatientAdmission
+    (AdmittedDate, NumAdmissions)
+VALUES
+    ('2024-01-03' ,4)
+INSERT INTO #PatientAdmission
+    (AdmittedDate, NumAdmissions)
+VALUES
+    ('2024-01-05' ,2)
+INSERT INTO #PatientAdmission
+    (AdmittedDate, NumAdmissions)
+VALUES
+    ('2024-01-08' ,2)
+SELECT
+    *
+FROM
+    #PatientAdmission
 
 /*
  * Exercise: create a resultset that has a row for all dates in that period 
@@ -22,10 +44,35 @@ SELECT * FROM #PatientAdmission
 
 DECLARE @StartDate DATE;
 DECLARE @EndDate DATE;
-SELECT @StartDate = DATEFROMPARTS(2024, 1, 1);
-SELECT @EndDate = DATEFROMPARTS(2024, 1, 8);
-
--- write your answer here
+DECLARE @NumDays INT;
+SELECT
+    @StartDate = DATEFROMPARTS(2024, 1, 1);
+SELECT
+    @EndDate = DATEFROMPARTS(2024, 1, 8);
+SELECT
+    @NumDays = DATEDIFF(DAY, @StartDate, @EndDate) + 1;
+WITH
+    ContigDateRange
+    (
+        N ,AdmittedDate
+    )
+    AS
+    (
+        SELECT
+            t.N
+    ,DATEADD(DAY, t.N - 1, @StartDate)
+        FROM
+            Tally t
+        WHERE t.N <=@NumDays
+    )
+SELECT
+    cdr.AdmittedDate
+    ,COALESCE(pa.NumAdmissions,0) AS NumAdmissions
+FROM
+    ContigDateRange cdr LEFT JOIN #PatientAdmission pa ON cdr.AdmittedDate = pa.AdmittedDate
+WHERE pa.NumAdmissions IS NULL
+ORDER BY
+cdr.AdmittedDate
 
 /*
  * Exercise: list the dates that have no patient admissions
@@ -33,7 +80,9 @@ SELECT @EndDate = DATEFROMPARTS(2024, 1, 8);
 
 DECLARE @StartDate DATE;
 DECLARE @EndDate DATE;
-SELECT @StartDate = DATEFROMPARTS(2024, 1, 1);
-SELECT @EndDate = DATEFROMPARTS(2024, 1, 8);
+SELECT
+    @StartDate = DATEFROMPARTS(2024, 1, 1);
+SELECT
+    @EndDate = DATEFROMPARTS(2024, 1, 8);
 
 -- write your answer here
